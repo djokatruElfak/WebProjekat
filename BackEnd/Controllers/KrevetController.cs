@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -17,6 +18,8 @@ namespace Controllers
             Context = context;
         }
         
+        
+        [EnableCors("CORS")]
         [Route("DodajKrevet")]
         [HttpPost]
         public async Task<ActionResult> dodajKrevet(int pacijentID, int bolestID, int doktorID, int bolnicaID, int x, int y) {
@@ -69,8 +72,10 @@ namespace Controllers
                 return BadRequest(e);
             }
         }
+        
+        [EnableCors("CORS")]
         [Route("PomeriPacijenta/{pacijentID}/{x}/{y}")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult> pomeriPacijenta(int pacijentID, int x, int y) {
             try {
                 if (!(await Context.pacijenti.Where(p => p.ID == pacijentID).AnyAsync())) {
@@ -95,8 +100,9 @@ namespace Controllers
             }
         }
 
+        [EnableCors("CORS")]
         [Route("PromeniDoktora/{krevetID}")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult> promeniDoktora(int krevetID, [FromQuery]int doktorID) {
             try {
                 if (!(await Context.kreveti.Where(p => p.ID == krevetID).AnyAsync())) {

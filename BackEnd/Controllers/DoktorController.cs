@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -16,6 +17,8 @@ namespace Controllers
         public DoktorController(BolnicaContext context) {
             Context = context;
         }
+        
+        [EnableCors("CORS")]
         [Route("DodajDoktora")]
         [HttpPost]
         public async Task<ActionResult> dodajDoktora(String ime, String prezime, int bolnicaID, int kapacitet) {
@@ -48,6 +51,7 @@ namespace Controllers
             }
         }
 
+        [EnableCors("CORS")]
         [Route("IzbrisiDoktora/{doktorID}")]
         [HttpDelete]
         public async Task<ActionResult> izbrisiDoktora(int doktorID) {

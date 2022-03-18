@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -17,6 +18,7 @@ namespace Controllers
             Context = context;
         }
 
+        [EnableCors("CORS")]
         [Route("PreuzmiBolnice")]
         [HttpGet]
         public async Task<ActionResult> preuzmi(int? bolnicaID) {
@@ -66,6 +68,7 @@ namespace Controllers
             }
         }
         
+        [EnableCors("CORS")]
         [Route("Napravi")]
         [HttpPost]
         public async Task<ActionResult> napraviBolnicu(String naziv, int duzina, int sirina) {

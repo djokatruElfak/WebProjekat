@@ -747,7 +747,7 @@ export class Bolnica {
             }
         }
         await fetch("https://localhost:5001/Krevet/PomeriPacijenta/" + this.matrica[staroX][staroY].pacijent.id + "/" + novoX + "/" + novoY, {
-            method: "POST"
+            method: "PUT"
         }).then(async () => {
             this.ucitajKrevetePonovo();
         })

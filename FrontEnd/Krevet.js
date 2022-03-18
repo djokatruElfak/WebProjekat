@@ -61,7 +61,7 @@ export class Krevet {
                     doktorID: doktor.id
                 });
                 await fetch(url, {
-                    method:"POST"
+                    method:"PUT"
                 }).then(async () => {
                     return new Promise((resolve, reject) => {
                         if (true) {

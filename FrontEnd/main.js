@@ -10,7 +10,9 @@ async function crtaj() {
      mainContainer.className = "mainContainerBolnica";
      document.body.appendChild(mainContainer);
 
-     await fetch("https://localhost:5001/Bolnica/PreuzmiBolnice").then(async (res) => {
+     await fetch("https://localhost:5001/Bolnica/PreuzmiBolnice", {
+          method: "GET"
+     }).then(async (res) => {
           await res.json().then(async (res2) => {
                res2.forEach((item) => {
                     let bolnicaParse = new Bolnica(item.naziv, item.duzina, item.sirina, item.id);

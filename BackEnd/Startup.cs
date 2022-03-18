@@ -30,7 +30,16 @@ namespace BackEnd
         {
             services.AddCors(options => {
                 options.AddPolicy("CORS", builder => {
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    builder.WithOrigins(new string[]
+                        {
+                            "http://localhost:8080",
+                            "https://localhost:8080",
+                            "http://127.0.0.1:8080",
+                            "https://127.0.0.1:8080",
+                            "http://127.0.0.1:5500"
+                        })
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
                 });
             });
             services.AddDbContext<BolnicaContext>(options => {

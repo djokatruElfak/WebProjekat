@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -17,6 +18,7 @@ namespace Controllers
             Context = context;
         }
 
+        [EnableCors("CORS")]
         [Route("NapraviPacijenta")]
         [HttpPost]
         public async Task<ActionResult> napraviPacijenta(String ime, String prezime, int godinaRodjenja, String dodatneInfo) {
@@ -49,8 +51,9 @@ namespace Controllers
             }
         }
 
+        [EnableCors("CORS")]
         [Route("PromeniPacijenta/{pacijentID}")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult> promeniPacijenta(int pacijentID, String Ime, String Prezime, int godinaRodjenja, String dodatneInfo) {
             try {
                 if (!(await Context.pacijenti.Where(p => p.ID == pacijentID).AnyAsync())) {
@@ -88,6 +91,8 @@ namespace Controllers
                 return BadRequest(e);
             }
         }
+        
+        [EnableCors("CORS")]
         [Route("IzbrisiPacijenta/{pacijentID}")]
         [HttpDelete]
         public async Task<ActionResult> izbrisiPacijenta(int pacijentID) {
@@ -110,6 +115,8 @@ namespace Controllers
                 return BadRequest(e);
             }
         }
+        
+        [EnableCors("CORS")]
         [Route("Izvestaj")]
         [HttpGet]
         public async Task<ActionResult> izvestaj([FromQuery]int pacijentID) {

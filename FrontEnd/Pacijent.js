@@ -29,7 +29,7 @@ export class Pacijent {
             dodatneInfo
         });
         await fetch(url, {
-            method: "POST"
+            method: "PUT"
         }).catch((res) => alert(res));
     }
 }
