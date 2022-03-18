@@ -11,6 +11,9 @@ export class Help {
     }
     static validateString(str) {
         var letters = /^[A-Za-z]+$/;
+        if (str < 3 || str > 50) {
+            return false;
+        }
         if(str.match(letters))
             return true;
         return false;

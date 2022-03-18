@@ -101,6 +101,29 @@ namespace Controllers
         }
 
         [EnableCors("CORS")]
+        [Route("PromeniBolest/{krevetID}")]
+        [HttpPut]
+        public async Task<ActionResult> promeniBolest(int krevetID, int bolestID) {
+            try {
+                if (!(await Context.kreveti.Where(p => p.ID == krevetID).AnyAsync())) {
+                    return BadRequest("Pogresan ID kreveta!");
+                }
+                if (!(await Context.bolesti.Where(p => p.ID == bolestID).AnyAsync())) {
+                    return BadRequest("Pogresan ID bolesti!");
+                }
+                var krevet = await Context.kreveti.Where(p => p.ID == krevetID).FirstOrDefaultAsync();
+                var bolest = await Context.bolesti.Where(p => p.ID == bolestID).FirstOrDefaultAsync();
+                krevet.bolest = bolest;
+                Context.kreveti.Update(krevet);
+                await Context.SaveChangesAsync();
+                return Ok("Uspeh");
+            }
+            catch (Exception e) {
+                return BadRequest(e);
+            }
+        }
+
+        [EnableCors("CORS")]
         [Route("PromeniDoktora/{krevetID}")]
         [HttpPut]
         public async Task<ActionResult> promeniDoktora(int krevetID, [FromQuery]int doktorID) {

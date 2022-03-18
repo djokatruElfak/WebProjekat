@@ -12,7 +12,7 @@ export class Bolnica {
         this.naziv = naziv;
         this.sirina = sirina;
         this.duzina = duzina;
-        this.matrica = [...Array(this.sirina)].map(x => Array(this.duzina).fill(null));
+        this.matrica = [...Array(this.duzina)].map(x => Array(this.sirina).fill(null));
         this.kapacitet = 0;
         this.doktori = [];
         this.bolesti = [];
@@ -153,7 +153,7 @@ export class Bolnica {
             RadioBtns.forEach((item, index) => {
                 if (item.checked) {
                     oboljenje = bolesti[index];
-                    selektovano = 1;
+                    selektovano = index;
                 }
             });
 
@@ -252,6 +252,8 @@ export class Bolnica {
         inputDodajDoktoraPrezime.type = "text";
         inputDodajDoktoraPrezime.placeholder = "Prezime doktora";
 
+
+        // 3.2 KAPACITET
         let selectDodajDoktoraKapacitetLabela = Help.newEl("label", dodajDoktoraForma);
         selectDodajDoktoraKapacitetLabela.innerHTML = "Kapacitet: "
         let selectDodajDoktoraKapacitet = Help.newEl("select", dodajDoktoraForma);
@@ -259,7 +261,7 @@ export class Bolnica {
         var optionKapacitet = Help.newEl("option", selectDodajDoktoraKapacitet);
         optionKapacitet.value = "-1";
 
-        for (let i = 0; i < 20; i++) {
+        for (let i = 1; i < 20; i++) {
             let optionKapacitetK = Help.newEl("option", selectDodajDoktoraKapacitet);
             optionKapacitetK.innerHTML = i;
             optionKapacitetK.value = i;
@@ -267,12 +269,12 @@ export class Bolnica {
 
 
 
-        // 3.2 SUBMIT
+        // 3.3 SUBMIT
         Help.newEl("br", dodajDoktoraForma);
         let submitDodajDoktora = Help.newEl("input", dodajDoktoraForma);
         submitDodajDoktora.type = "submit";
 
-        // 3.3 PARSE
+        // 3.4 PARSE
         submitDodajDoktora.onclick = (event) => {
             event.preventDefault();
             let dodajDoktoraSlanje = {
@@ -334,7 +336,7 @@ export class Bolnica {
             event.preventDefault();
             let x = selectIzvestajX.value;
             let y = selectIzvestajY.value;
-            this.uzmiIzvestaj(x, y);
+            this.uzmiIzvestajForm(x, y);
         }
 
 
@@ -368,7 +370,7 @@ export class Bolnica {
         matricaTH.innerHTML = this.naziv;
         var matricaTBody = Help.newEl("tbody", matricaTable);
         var matTR = [];
-        var matTD = [...Array(this.sirina)].map(x => Array(this.duzina).fill(null));
+        var matTD = [...Array(this.duzina)].map(x => Array(this.sirina).fill(null));
         for (let i = 0; i < this.duzina; i++) {
             matTR[i] = Help.newEl("tr", matricaTBody);
             for (let j = 0; j < this.sirina; j++) {
@@ -511,14 +513,11 @@ export class Bolnica {
             let bolestID;
 
             if (radioBolesti1.checked) {
-                bolest = "Kovid";
-                bolestID = 1;
+                bolest = this.bolesti[0];
             } else if (radioBolesti2.checked) {
-                bolest = "Prehlada";
-                bolestID = 2;
+                bolest = this.bolesti[1];
             } else {
-                bolest = "Alergija";
-                bolestID = 3;
+                bolest = this.bolesti[2];
             }
             let pacijentZaPromenu = this.matrica[podaci.krevetX][podaci.krevetY];
             
@@ -541,12 +540,18 @@ export class Bolnica {
                 this.premestiPacijenta(podaci.krevetX, podaci.krevetY, x, y);
             }
 
-            if (bolest != podaci.bolest) {
-                this.promeniBolest(x, y);
+            if (bolest.nazivBolesti != podaci.bolest) {
+                this.promeniBolest(x, y, bolest);
             }
 
             Help.closeModalScreen();
         }
+    }
+
+    promeniBolest(x, y, bolest) {
+        this.matrica[x][y].promeniBolest(bolest).then(() => {
+            this.ucitajKrevetePonovo();
+        })
     }
 
     izbrisiSve() {
@@ -578,6 +583,18 @@ export class Bolnica {
     }
 
     async dodajDoktoraForm(dodajDoktoraSlanje) {
+        if (!Help.validateString(dodajDoktoraSlanje.ime)) {
+            alert("Ime nije dobro uneseno!");
+            return 0;
+        }
+        if (!Help.validateString(dodajDoktoraSlanje.prezime)) {
+            alert("Prezime nije dobro uneseno!");
+            return 0;
+        }
+        if (dodajDoktoraSlanje.kapacitet == -1) {
+            alert("Kapacitet mora biti unesen!");
+            return 0;
+        }
         let ime = dodajDoktoraSlanje.ime;
         let prezime = dodajDoktoraSlanje.prezime;
         let kapacitet = dodajDoktoraSlanje.kapacitet;
@@ -606,15 +623,6 @@ export class Bolnica {
         let doktor = formaSlanje.doktor;
         let x = formaSlanje.x;
         let y = formaSlanje.y;
-
-        if (ime.length < 3) {
-            alert("Ime mora da sadrzi barem tri karaktera!");
-            return 0;
-        }
-        if (prezime.length < 3) {
-            alert("Prezime mora da sadrzi barem tri karaktera!");
-            return 0;
-        }
         if (!Help.validateString(ime)) {
             alert("Ime mora biti sacinjeno od malih i velikih slova!");
             return 0;
@@ -623,7 +631,7 @@ export class Bolnica {
             alert("Ime mora biti sacinjeno od malih i velikih slova!");
             return 0;
         }
-        if (!selektovano) {
+        if (selektovano < 0) {
             alert("Molimo vas da odaberete oboljenje!");
             return 0;
         }
@@ -651,6 +659,7 @@ export class Bolnica {
             godinaRodjenja: 2000,
             dodatneInfo: ""
         });
+        console.log(selektovano)
         await fetch(url, {
             method: "POST"
         }).then(async (res) => {
@@ -661,7 +670,7 @@ export class Bolnica {
                     pacijentID: pacijentID,
                     bolnicaID: this.id,
                     doktorID: doktor.id,
-                    bolestID: selektovano+1,
+                    bolestID: this.bolesti[selektovano].id,
                     x: x,
                     y: y
                 })
@@ -676,7 +685,15 @@ export class Bolnica {
         }).catch(err =>  console.log(err));
     }
 
-    async uzmiIzvestaj(x, y) {
+    async uzmiIzvestajForm(x, y) {
+        if (x < 0 || y < 0) {
+            alert("Unesite poziciju!");
+            return 0;
+        }
+        if (this.matrica[x][y].prazan) {
+            alert("Krevet nije popunjen na datoj poziciji!");
+            return 0;
+        }
         let id = this.matrica[x][y].pacijent.id;
         let url = new URL("https://localhost:5001/Pacijent/Izvestaj");
         url.search = new URLSearchParams({
@@ -757,7 +774,11 @@ export class Bolnica {
     async otpustiPacijentaForm(formaOtpusti) {
         let x = formaOtpusti.x;
         let y = formaOtpusti.y;
-        if (!this.matrica[x][y]) {
+        if (x < 0 || y < 0) {
+            alert("Unesite poziciju!");
+            return 0;
+        }
+        if (this.matrica[x][y].prazan) {
             alert("Nema pacijenta na tom mestu!");
             return 0;
         }
@@ -775,14 +796,14 @@ export class Bolnica {
     }
 
     async ucitajKrevetePonovo() {
-        this.matrica = [...Array(this.sirina)].map(x => Array(this.duzina).fill(null));
+        this.matrica = [...Array(this.duzina)].map(x => Array(this.sirina).fill(null));
         await fetch("https://localhost:5001/Bolnica/PreuzmiBolnice?bolnicaID=" + this.id).then(async (res) => {
             await res.json().then(async (res2) => {
                 res2.forEach((item) => {
                     let kreveti = item.kreveti;
                     kreveti.forEach((item2) => {
                         let pacijent = new Pacijent(item2.ime, item2.prezime, item2.pacijentID);
-                        let bolest = new Bolest(item2.bolest);
+                        let bolest = new Bolest(item2.bolestID, item2.bolest, item2.simptomi);
                         let doktor = new Doktor(item2.doktorID, item2.doktorIme, item2.doktorPrezime);
                         let krevet = new Krevet(item2.x, item2.y, this, pacijent, bolest, doktor, item2.krevetID);
                         this.matrica[krevet.x][krevet.y] = krevet;
@@ -791,5 +812,14 @@ export class Bolnica {
                 })
             })
         }).catch(err => console.log(err))
+    }
+
+    dodajBolest(bolest) {
+        if (!this.bolesti.includes(bolest, 0)) {
+            this.bolesti.push(bolest);
+            console.log(this.bolesti)
+        } else {
+            console.log("false")
+        }
     }
 }

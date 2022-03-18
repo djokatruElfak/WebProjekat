@@ -77,4 +77,22 @@ export class Krevet {
             }
         }
     }
+    async promeniBolest(bolest) {
+        let url = new URL("https://localhost:5001/Krevet/PromeniBolest/" + this.id);
+        url.search = new URLSearchParams({
+            bolestID: bolest.id
+        })
+        await fetch(url, {
+            method: "PUT"
+        }).then(async () => {
+            return new Promise((resolve, reject) => {
+                if (true) {
+                  return resolve();
+                } else {
+                  return reject();
+               }
+             });
+        })
+        .catch(err => console.log(err));
+    }
 }

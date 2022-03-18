@@ -97,5 +97,18 @@ namespace Controllers
                 return BadRequest(e);
             }
         }
+        [EnableCors("CORS")]
+        [Route("preuzmiOsnovneBolesti")]
+        [HttpGet]
+        public ActionResult preuzmiOsnovneBolesti() {
+            try {
+                var bolesti = Context.bolesti.Take(3);
+                return Ok(bolesti);
+            }
+            catch(Exception e) {
+                return BadRequest(e);
+            }
+        }
+
     }
 }
